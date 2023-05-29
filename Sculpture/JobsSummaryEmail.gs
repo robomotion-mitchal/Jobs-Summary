@@ -1,8 +1,8 @@
-
 function emailJobsSummary(){
   
   var html = createJobsSummaryEmail(JobType.Paradise);
   html += createJobsSummaryEmail(JobType.Import_Counts);
+  html += createJobsSummaryEmail(JobType.Breakthru_Scrape_URLs);
   html += createJobsSummaryEmail(JobType.Ocr_Invoice);
 
   MailApp.sendEmail(
@@ -27,6 +27,7 @@ function createJobsSummaryEmail(jobType){
   startDate.setDate(startDate.getDate() - daysDiff);
 
   var rows = sheetData.filter(value => (value[0] === 'Date' || value[0] >= startDate));
+  
   var html = `<head><style>
   table {
 	  border-collapse: collapse;
@@ -57,15 +58,19 @@ function createJobsSummaryEmail(jobType){
 
   var colDiff = 3;
 
-  if(jobType === JobType.Paradise)
+  if(jobType === JobType.Paradise){
     html += '<h3>Paradise POS</h3><table>';
-  else if(jobType === JobType.Import_Counts)
+  } else if(jobType === JobType.Import_Counts){
     html += '<h3>Import Counts</h3><table>';    
-  else if(jobType === JobType.Ocr_Invoice){
+  } else if(jobType === JobType.Breakthru_Scrape_URLs){
+    html += '<h3>Breakthru Scrape Invoice URLs</h3><table>';
+    colDiff = 0;
+  } else if(jobType === JobType.Ocr_Invoice){
     html += '<h3>Invoices</h3><table>';
     colDiff = 4;
-  } else if(jobType === JobType.Business_Summary)
+  } else if(jobType === JobType.Business_Summary){
     html += '<h3>Business Summary Report</h3><table>';
+  }
 
   for(var i=0; i<rows.length; i++) {
     
@@ -79,6 +84,7 @@ function createJobsSummaryEmail(jobType){
         html += "<td width='50px'>" + dt[2] + "-" + dt[1] + "</td>";
       } else{
         var cell = rows[i][j];
+        
         cell = cell === "SUCCESS" ? "&#10004;" : cell;
         cell = cell === "FAILED" ? "&#10006;" : cell;
         html += "<td>" + cell + "</td>";

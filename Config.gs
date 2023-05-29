@@ -1,7 +1,9 @@
 const JobsSummarySheetId = "12EfvHDJgff-n1v8iMgY8C6ilO2V_nUqHZIFlZWRdD7k";
 
-const Summary_Recipients = 'arif134@gmail.com,m.majors@sculpturehospitality.com,gopal.sabhadiya@gmail.com';
-// const Summary_Recipients = 'arif134@gmail.com';
+const Summary_Recipients = 
+`m.majors@sculpturehospitality.com,
+gopal.sabhadiya@gmail.com,
+robomotion.mitchal@gmail.com`;
 
 //RM API Token:
 //fb73e14e446046e6b86b1c6bb27e99f7efc0542980d94fac9487b2adab92f3e3
@@ -32,7 +34,8 @@ var JobType = {
   Import_Counts: "import_counts",
   Business_Summary: "business_summary",
   Ocr_Invoice: "ocr_invoice",
-  Upload_Sales: "UPLOAD_SALES"
+  Upload_Sales: "UPLOAD_SALES",
+  Breakthru_Scrape_URLs: "Breakthru_Scrape_URLs"
 };
 
 var SculptureConfig = {

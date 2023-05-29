@@ -1,9 +1,10 @@
 var clientsArray = [];
 
 function updateAllSheets() {
-  // processSheet_Paradise();
-  // processSheet_Import_Counts();
+  processSheet_Paradise();
+  processSheet_Import_Counts();
   processSheet_OCR_Invoice();
+  processSheet_Breakthru_Scrape();
 }
 
 /**
@@ -292,7 +293,7 @@ function processSheet_OCR_Invoice() {
 
   var jobType = JobType.Ocr_Invoice;
   var startDate = new Date();
-  startDate.setDate(startDate.getDate() - 5);
+  startDate.setDate(startDate.getDate() - 10);
 
   var jobFilter = {
     insertDate: {$gte: startDate},
@@ -422,6 +423,63 @@ function processSheet_OCR_Invoice() {
     if(dataRow[3] !== 'TEST'){
       data.push(dataRow);
     }
+  }
+
+  if(data.length > 0){
+    sheet.getRange(lastRow, 1, data.length, lastCol).setValues(data);
+    sheet.sort(1)
+    SpreadsheetApp.flush();
+  }  
+}
+
+function processSheet_Breakthru_Scrape() {
+
+  var jobType = JobType.Breakthru_Scrape_URLs;
+  var startDate = new Date();
+  startDate.setDate(startDate.getDate() - 8);
+
+  var jobFilter = {
+    runAt: {$gte: startDate},
+    jobType: jobType
+  };
+
+  //Download Jobs from Database
+  var jobs = database_GetDocuments(Collections.Flow_status, jobFilter);
+  Logger.log('Total Jobs: ' + jobs.length);
+
+  if(jobs.length === 0) return;
+
+  //Remove Last 8 Days Jobs from Spreadsheet
+  var sheet = SpreadsheetApp.openById(JobsSummarySheetId).getSheetByName(jobType);
+  var sheetData = sheet.getDataRange().getValues();
+  var index = 0;
+
+  for(var i=1; i<sheetData.length; i++){
+    if(sheetData[i][0] > startDate){
+      index = i;
+      break;
+    }
+  }
+
+  if(index > 0){
+    sheet.getRange(index + 1, 1 , sheetData.length-i, 8).clearContent();
+    SpreadsheetApp.flush();
+    Utilities.sleep(2);
+    sheetData = sheet.getDataRange().getValues();
+  }
+
+  //Insert Jobs into Sheet
+  var data = [];
+  var lastRow = sheet.getLastRow() + 1;
+  var lastCol = sheet.getLastColumn();
+
+  for(var i=0; i<jobs.length; i++){
+    var job = jobs[i];
+
+    data.push(
+      [new Date(job.runAt),
+      job.status]
+    );
   }
 
   if(data.length > 0){
